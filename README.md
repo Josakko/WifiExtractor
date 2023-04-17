@@ -1,6 +1,10 @@
 # WifiExtractor
 Tool made in python for gathering wifi passwords from victims machine
 
+## Usage 
+
+1. Replace all the data in 
+
 ## Need Help?
 
 If you need help contact me on my [discord server](https://discord.gg/xgET5epJE6).
