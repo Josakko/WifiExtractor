@@ -48,7 +48,7 @@ def getFiles():
 getFiles()
 
 with open("notes.txt", "a", encoding="utf-8") as file:
-    written_ssids = set()
+    written_ssid = set()
     for i in files:
         with open(i, "r") as f:
             for line in f.readlines():
@@ -56,14 +56,14 @@ with open("notes.txt", "a", encoding="utf-8") as file:
                     stripped = line.strip()
                     front = stripped[6:]
                     back = front[:-7]
-                    if back not in written_ssids:
+                    if back not in written_ssid:
                         ssid.append(back)
                 if "keyMaterial" in line:
                     stripped = line.strip()
                     front = stripped[13:]
                     back = front[:-14]
-                    if ssid and back and ssid[-1] not in written_ssids:  # only write the last SSID if it hasn't been written yet
-                        written_ssids.add(ssid[-1])
+                    if ssid and back and ssid[-1] not in written_ssid:
+                        written_ssid.add(ssid[-1])
                         password.append(back)
                         file.write(f"SSID: {ssid[-1]} Password: {password[-1]}\n")
 
